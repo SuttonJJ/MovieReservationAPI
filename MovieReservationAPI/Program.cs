@@ -1,21 +1,72 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using MovieReservationAPI.Constants;
+using MovieReservationAPI.Models.Auth;
+using MovieReservationAPI.Services;
 
 namespace MovieReservationAPI;
 
 public class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        // Add services to the container.
-        builder.Services.AddAuthorization();
+        builder.Services.AddScoped<ITokenService, TokenService>();
 
-        // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+        builder.Services.AddDbContext<MovieContext>(options =>
+            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+        builder.Services.AddIdentity<AppUser, IdentityRole>().AddEntityFrameworkStores<MovieContext>()
+            .AddDefaultTokenProviders();
+
+        builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidateLifetime = true,
+                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                    ValidAudience = builder.Configuration["Jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"]!))
+                };
+            });
+
+        // Permission management
+        builder.Services.AddAuthorization(options =>
+        {
+            // Movie
+            options.AddPolicy(Permissions.ViewMovie, policy => policy.RequireClaim("Permission", Permissions.ViewMovie));
+            options.AddPolicy(Permissions.CreateMovie, policy => policy.RequireClaim("Permission", Permissions.CreateMovie));
+            options.AddPolicy(Permissions.DeleteMovie, policy => policy.RequireClaim("Permission", Permissions.DeleteMovie));
+            options.AddPolicy(Permissions.UpdateMovie, policy => policy.RequireClaim("Permission", Permissions.UpdateMovie));
+            
+            // Showtime
+            options.AddPolicy(Permissions.ViewShowtime, policy => policy.RequireClaim("Permission", Permissions.ViewShowtime));
+            options.AddPolicy(Permissions.CreateShowtime, policy => policy.RequireClaim("Permission", Permissions.CreateShowtime));
+            options.AddPolicy(Permissions.UpdateShowtime, policy => policy.RequireClaim("Permission", Permissions.UpdateShowtime));
+            options.AddPolicy(Permissions.DeleteShowtime, policy => policy.RequireClaim("Permission", Permissions.DeleteShowtime));
+            
+            // TODO: RESERVATION
+        });
+
         builder.Services.AddOpenApi();
+        builder.Services.AddControllers();
 
         var app = builder.Build();
 
-        // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
             app.MapOpenApi();
@@ -23,26 +74,18 @@ public class Program
 
         app.UseHttpsRedirection();
 
+        app.UseAuthentication();
         app.UseAuthorization();
 
-        var summaries = new[]
+        app.MapControllers();
+        
+        // Seeding defaults
+        using (var scope = app.Services.CreateScope())
         {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
-
-        app.MapGet("/weatherforecast", (HttpContext httpContext) =>
-        {
-            var forecast =  Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                {
-                    Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    TemperatureC = Random.Shared.Next(-20, 55),
-                    Summary = summaries[Random.Shared.Next(summaries.Length)]
-                })
-                .ToArray();
-            return forecast;
-        })
-        .WithName("GetWeatherForecast");
+            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
+            await RoleSeeder.SeedRolesAndPermissions(roleManager, userManager);
+        }
 
         app.Run();
     }
