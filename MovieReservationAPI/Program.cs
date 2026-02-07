@@ -16,6 +16,7 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Services.AddScoped<ITokenService, TokenService>();
+        builder.Services.AddScoped<IAuthService, AuthService>();
 
         builder.Services.AddDbContext<MovieContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
