@@ -6,4 +6,6 @@ public class AppUser : IdentityUser
 {
     public string? RefreshToken { get; set; }
     public DateTime RefreshTokenExpiryTime { get; set; }
+
+    public List<Reservation> Reservations { get; set; }
 }
