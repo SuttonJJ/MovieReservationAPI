@@ -1,6 +1,6 @@
 using MovieReservationAPI.Models.Auth;
 
-namespace MovieReservationAPI.Models;
+namespace MovieReservationAPI.Models.Entities;
 
 public class Reservation
 {

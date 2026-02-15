@@ -1,11 +1,12 @@
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
-using MovieReservationAPI.Models;
+using MovieReservationAPI.Models.DTOs;
 using MovieReservationAPI.Models.Auth;
+using MovieReservationAPI.Models.Entities;
 
 namespace MovieReservationAPI.Services;
 
-public interface IShowTimeService
+public interface IShowtimeService
 {
     public Task<Result<List<ShowtimeResponse>>> GetMovieShowtimes(int movieId);
     public Task<Result<List<ShowtimeResponse>>> GetMovieShowtimeDate(int movieId, DateTime dateTime);
@@ -14,7 +15,7 @@ public interface IShowTimeService
     public Task<Result> DeleteShowtime(int id);
 }
 
-public class ShowtimeService(MovieContext context) : IShowTimeService
+public class ShowtimeService(MovieContext context) : IShowtimeService
 {
     public async Task<Result<List<ShowtimeResponse>>> GetMovieShowtimes(int movieId)
     {
@@ -75,16 +76,16 @@ public class ShowtimeService(MovieContext context) : IShowTimeService
         return Result.Ok(response);
     }
 
-    public async Task<Result<ShowtimeResponse>> UpdateShowtime(int id, UpdateShowtimeRequest request)
+    public async Task<Result<ShowtimeResponse>> UpdateShowtime(int showtimeId, UpdateShowtimeRequest request)
     {
-        Showtime? showtime = await context.Showtimes.FindAsync(id);
+        Showtime? showtime = await context.Showtimes.FindAsync(showtimeId);
 
         if (showtime == null) return Result.Fail("This showtime doesnt exist");
 
-        var movie = await context.Movies.FindAsync(request.MovieId);
+        var movie = await context.Movies.FindAsync(showtimeId);
         if (movie == null) return Result.Fail("This movie doesnt exist");
         
-        showtime.MovieId = request.MovieId;
+        showtime.MovieId = showtimeId;
         showtime.Time = request.Time;
 
         await context.SaveChangesAsync();
@@ -92,7 +93,7 @@ public class ShowtimeService(MovieContext context) : IShowTimeService
         return Result.Ok(new ShowtimeResponse
         {
             Id = showtime.Id,
-            MovieId = request.MovieId,
+            MovieId = showtimeId,
             Time = request.Time
         });
     }

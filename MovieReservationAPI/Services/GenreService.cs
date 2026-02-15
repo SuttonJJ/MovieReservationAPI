@@ -1,8 +1,8 @@
-// GenreService.cs
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
-using MovieReservationAPI.Models;
 using MovieReservationAPI.Models.Auth;
+using MovieReservationAPI.Models.DTOs;
+using MovieReservationAPI.Models.Entities;
 
 namespace MovieReservationAPI.Services;
 

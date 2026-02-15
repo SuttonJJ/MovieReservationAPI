@@ -1,7 +1,8 @@
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
-using MovieReservationAPI.Models;
 using MovieReservationAPI.Models.Auth;
+using MovieReservationAPI.Models.DTOs;
+using MovieReservationAPI.Models.Entities;
 
 namespace MovieReservationAPI.Services;
 
@@ -137,9 +138,9 @@ public class MovieService(MovieContext context) : IMovieService
         return Result.Ok(response);
     }
 
-    public async Task<Result> DeleteMovie(int id)
+    public async Task<Result> DeleteMovie(int movieId)
     {
-        var movie = await context.Movies.FindAsync(id);
+        var movie = await context.Movies.FindAsync(movieId);
 
         if (movie == null) return Result.Fail("Could not find this movie");
 

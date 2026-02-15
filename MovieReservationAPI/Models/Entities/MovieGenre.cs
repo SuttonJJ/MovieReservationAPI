@@ -1,4 +1,4 @@
-namespace MovieReservationAPI.Models;
+namespace MovieReservationAPI.Models.Entities;
 
 public class MovieGenre
 {
