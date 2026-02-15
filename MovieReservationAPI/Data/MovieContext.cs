@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using MovieReservationAPI.Models.Auth;
 using MovieReservationAPI.Models.Entities;
 
-namespace MovieReservationAPI.Models.Auth;
+namespace MovieReservationAPI.Data;
 
 public class MovieContext : IdentityDbContext<AppUser>
 {

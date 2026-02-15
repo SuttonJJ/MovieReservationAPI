@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MovieReservationAPI.Constants;
 using MovieReservationAPI.Models;
 using MovieReservationAPI.Models.DTOs;
 using MovieReservationAPI.Services;
@@ -9,6 +11,7 @@ namespace MovieReservationAPI.Controllers;
 [Route("api/[controller]")]
 public class MovieController(IMovieService movieService) : ControllerBase
 {
+    [Authorize(Policy = Permissions.ViewMovie)]
     [HttpGet]
     public async Task<IActionResult> GetAllMovies()
     {
@@ -19,6 +22,7 @@ public class MovieController(IMovieService movieService) : ControllerBase
         return Ok(result.Value);
     }
 
+    [Authorize(Policy = Permissions.CreateMovie)]
     [HttpPost]
     public async Task<IActionResult> AddMovie(CreateMovieRequest request)
     {
@@ -29,6 +33,7 @@ public class MovieController(IMovieService movieService) : ControllerBase
         return Ok(result.Value);
     }
 
+    [Authorize(Policy = Permissions.UpdateMovie)]
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateMovie(int id, UpdateMovieRequest request)
     {
@@ -39,6 +44,7 @@ public class MovieController(IMovieService movieService) : ControllerBase
         return Ok(result.Value);
     }
 
+    [Authorize(Policy = Permissions.DeleteMovie)]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteMovie(int id)
     {

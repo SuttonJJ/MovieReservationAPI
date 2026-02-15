@@ -1,7 +1,7 @@
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
+using MovieReservationAPI.Data;
 using MovieReservationAPI.Models.DTOs;
-using MovieReservationAPI.Models.Auth;
 using MovieReservationAPI.Models.Entities;
 
 namespace MovieReservationAPI.Services;

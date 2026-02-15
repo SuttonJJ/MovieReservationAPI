@@ -22,19 +22,22 @@ public class RoleSeeder
         var adminRole = new IdentityRole("Admin");
         await roleManager.CreateAsync(adminRole);
 
-        // Movie Permissions
+        // Movie 
         await roleManager.AddClaimAsync(adminRole, new Claim("Permission", Permissions.ViewMovie));
         await roleManager.AddClaimAsync(adminRole, new Claim("Permission", Permissions.CreateMovie));
         await roleManager.AddClaimAsync(adminRole, new Claim("Permission", Permissions.UpdateMovie));
         await roleManager.AddClaimAsync(adminRole, new Claim("Permission", Permissions.DeleteMovie));
         
-        // Showtime Permissions
+        // Showtime 
         await roleManager.AddClaimAsync(adminRole, new Claim("Permission", Permissions.ViewShowtime));
         await roleManager.AddClaimAsync(adminRole, new Claim("Permission", Permissions.CreateShowtime));
         await roleManager.AddClaimAsync(adminRole, new Claim("Permission", Permissions.UpdateShowtime));
         await roleManager.AddClaimAsync(adminRole, new Claim("Permission", Permissions.DeleteShowtime));
 
-        // TODO: RESERVATIONS
+        // Reservation
+        await roleManager.AddClaimAsync(adminRole, new Claim("Permission", Permissions.ViewReservation));
+        await roleManager.AddClaimAsync(adminRole, new Claim("Permission", Permissions.CreateReservation));
+        await roleManager.AddClaimAsync(adminRole, new Claim("Permission", Permissions.DeleteReservation));
     }
 
     private static async Task SeedUserRole(RoleManager<IdentityRole> roleManager)
@@ -48,14 +51,25 @@ public class RoleSeeder
         await roleManager.AddClaimAsync(userRole, new Claim("Permission", Permissions.ViewMovie));
         await roleManager.AddClaimAsync(userRole, new Claim("Permission", Permissions.ViewShowtime));
         
-        // TODO: RESERVATIONS
+        await roleManager.AddClaimAsync(userRole, new Claim("Permission", Permissions.ViewReservation));
+        await roleManager.AddClaimAsync(userRole, new Claim("Permission", Permissions.CreateReservation));
     }
 
     private static async Task SeedAdmins(UserManager<AppUser> userManager)
     {
-        var user = await userManager.FindByEmailAsync("Johannes.sutton2003@gmail.com");
-        if (user == null || await userManager.IsInRoleAsync(user, "Admin")) return;
+        var user = await userManager.FindByEmailAsync("johannes.sutton2003@gmail.com");
+        if (user == null) return;
 
-        await userManager.AddToRolesAsync(user, new List<string>{"admin", "user"});
+        // Add to Admin role if not already
+        if (!await userManager.IsInRoleAsync(user, "Admin"))
+        {
+            await userManager.AddToRoleAsync(user, "Admin");
+        }
+    
+        // Add to User role if not already
+        if (!await userManager.IsInRoleAsync(user, "User"))
+        {
+            await userManager.AddToRoleAsync(user, "User");
+        }
     }
 }

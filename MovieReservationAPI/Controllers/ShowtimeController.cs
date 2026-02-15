@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MovieReservationAPI.Constants;
 using MovieReservationAPI.Models.DTOs;
 using MovieReservationAPI.Services;
 
@@ -8,7 +10,8 @@ namespace MovieReservationAPI.Controllers;
 [Route("api/[controller]")]
 public class ShowtimeController(IShowtimeService showtimeService) : ControllerBase
 {
-    [HttpGet("{id}")]
+    [Authorize(Policy = Permissions.ViewShowtime)]
+    [HttpGet("movie/{id}")]
     public async Task<IActionResult> GetShowtimes(int id, [FromQuery] DateTime? date = null)
     {
         // Checks whether to get movie on a certain date or all dates
@@ -21,6 +24,7 @@ public class ShowtimeController(IShowtimeService showtimeService) : ControllerBa
         return Ok(result.Value);
     }
 
+    [Authorize(Policy = Permissions.CreateShowtime)]
     [HttpPost]
     public async Task<IActionResult> CreateShowtime(CreateShowtimeRequest request)
     {
@@ -31,6 +35,7 @@ public class ShowtimeController(IShowtimeService showtimeService) : ControllerBa
         return Ok(result.Value);
     }
 
+    [Authorize(Policy = Permissions.UpdateShowtime)]
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateShowtime(int id, UpdateShowtimeRequest request)
     {
@@ -41,6 +46,7 @@ public class ShowtimeController(IShowtimeService showtimeService) : ControllerBa
         return Ok(result.Value);
     }
 
+    [Authorize(Policy = Permissions.DeleteShowtime)]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteShowtime(int id)
     {

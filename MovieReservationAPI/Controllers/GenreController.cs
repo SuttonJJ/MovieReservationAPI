@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MovieReservationAPI.Models;
 using MovieReservationAPI.Models.DTOs;
@@ -5,6 +6,7 @@ using MovieReservationAPI.Services;
 
 namespace MovieReservationAPI.Controllers;
 
+[Authorize(Roles = "Admin")]
 [ApiController]
 [Route("api/[controller]")]
 public class GenreController(IGenreService genreService) : ControllerBase

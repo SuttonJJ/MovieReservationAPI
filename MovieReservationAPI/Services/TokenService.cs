@@ -15,7 +15,7 @@ public interface ITokenService
     ClaimsPrincipal GetPrincipalFromExpiredToken(string token);
 }
 
-public class TokenService(IConfiguration configuration, UserManager<AppUser> userManager) : ITokenService
+public class TokenService(IConfiguration configuration, UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager) : ITokenService
 {
     public async Task<string> GenerateJwtToken(AppUser user)
     {
@@ -33,6 +33,13 @@ public class TokenService(IConfiguration configuration, UserManager<AppUser> use
         foreach (var role in roles)
         {
             claims.Add(new Claim(ClaimTypes.Role, role));
+
+            var identityRole = await roleManager.FindByNameAsync(role);
+            if (identityRole != null)
+            {
+                var roleClaims = await roleManager.GetClaimsAsync(identityRole);
+                claims.AddRange(roleClaims);
+            }
         }
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Secret"]));

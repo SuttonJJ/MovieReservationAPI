@@ -3,10 +3,10 @@ namespace MovieReservationAPI.Constants;
 public class Permissions
 {
     // Movie permissions
-    public const string ViewMovie = "Permissions.Movies.View";
-    public const string CreateMovie = "Permissions.Movies.Create";
-    public const string UpdateMovie = "Permissions.Movies.Update";
-    public const string DeleteMovie = "Permissions.Movies.Delete";
+    public const string ViewMovie = "Permissions.Movie.View";
+    public const string CreateMovie = "Permissions.Movie.Create";
+    public const string UpdateMovie = "Permissions.Movie.Update";
+    public const string DeleteMovie = "Permissions.Movie.Delete";
     
     // Showtime permissions
     public const string ViewShowtime = "Permissions.Showtime.View";
@@ -14,5 +14,7 @@ public class Permissions
     public const string UpdateShowtime = "Permissions.Showtime.Update";
     public const string DeleteShowtime = "Permissions.Showtime.Delete";
     
-    // TODO: RESERVATION
+    public const string ViewReservation = "Permissions.Reservation.";
+    public const string CreateReservation = "Permissions.Reservation.Create";
+    public const string DeleteReservation = "Permissions.Reservation.Delete";
 }

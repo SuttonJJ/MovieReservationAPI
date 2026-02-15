@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using MovieReservationAPI.Constants;
+using MovieReservationAPI.Data;
 using MovieReservationAPI.Models.Auth;
 using MovieReservationAPI.Services;
 
@@ -64,7 +65,10 @@ public class Program
             options.AddPolicy(Permissions.UpdateShowtime, policy => policy.RequireClaim("Permission", Permissions.UpdateShowtime));
             options.AddPolicy(Permissions.DeleteShowtime, policy => policy.RequireClaim("Permission", Permissions.DeleteShowtime));
             
-            // TODO: RESERVATION
+            // Reservation
+            options.AddPolicy(Permissions.ViewReservation, policy => policy.RequireClaim("Permission", Permissions.ViewReservation));
+            options.AddPolicy(Permissions.CreateReservation, policy => policy.RequireClaim("Permission", Permissions.CreateReservation));
+            options.AddPolicy(Permissions.DeleteReservation, policy => policy.RequireClaim("Permission", Permissions.DeleteReservation));
         });
 
         builder.Services.AddOpenApi();
